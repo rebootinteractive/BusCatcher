@@ -202,6 +202,11 @@ export class GameApp {
     waypoints.push(new THREE.Vector3(cellX(this.layout, last.col), 0, cellZ(this.layout, 0) - 1.1));
 
     const dest = events[1];
+    // Reserve the bus NOW — the person may still be walking when the bus
+    // fills up, and its departure must wait for them to actually sit down.
+    if (dest.kind === 'board') {
+      this.inFlight.set(dest.busId, (this.inFlight.get(dest.busId) ?? 0) + 1);
+    }
     this.tasks.push(
       walkTask(person, waypoints, 5.2, () => this.startDestination(person, dest))
     );
@@ -257,7 +262,6 @@ export class GameApp {
   private startDestination(person: PersonView, dest: SimEvent) {
     if (dest.kind === 'board') {
       const { busId, seatIdx } = dest;
-      this.inFlight.set(busId, (this.inFlight.get(busId) ?? 0) + 1);
       this.tasks.push(
         flightTask(
           person,
