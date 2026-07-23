@@ -74,7 +74,7 @@ export class EditorApp {
           buses: [],
         };
 
-    this.colorCounts = { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 };
+    this.colorCounts = Object.fromEntries(COLOR_KEYS.map((c) => [c, 0])) as Record<ColorKey, number>;
     if (cb.initial) {
       for (const c of this.level.cells) {
         if (c !== null && c !== 'wall') this.colorCounts[c]++;
